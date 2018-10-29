@@ -2,13 +2,13 @@
 
 const mongoose = require('mongoose');
 
-const schema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
   fullname: String,
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true}
 });
 
-schema.set('toJSON', {
+userSchema.set('toJSON', {
   virtuals: true, 
   transform: (doc, result) => {
     delete result._id;
@@ -17,4 +17,9 @@ schema.set('toJSON', {
   }
 });
 
-module.exports = mongoose.model('User', schema);
+userSchema.methods.validatePassword = function(password) {
+  return password === this.password;
+};
+
+
+module.exports = mongoose.model('User', userSchema);
