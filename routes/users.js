@@ -10,10 +10,11 @@ const router = express.Router();
 
 router.post('/', (req, res, next) => {
   const { username, fullname, password } = req.body;
-  const requiredFields = ['username', 'password'];
-  const missingField = requiredFields.find(field => !(field in req.body));
 
   /***** Never trust users - validate input *****/
+  const requiredFields = ['username', 'password'];
+  const missingField = requiredFields.find(field => !(field in req.body));
+  
   if (missingField){
     const err = new Error(`Missing '${missingField}' in request body`);
     err.status = 422;
