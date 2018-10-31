@@ -13,8 +13,9 @@ router.use('/', passport.authenticate('jwt', {session: false, failWithError: tru
 
 /* ========== GET/READ ALL ITEMS ========== */
 router.get('/', (req, res, next) => {
+  const userId = req.user.id;
 
-  Folder.find()
+  Folder.find({userId})
     .sort('name')
     .then(results => {
       res.json(results);
@@ -27,6 +28,7 @@ router.get('/', (req, res, next) => {
 /* ========== GET/READ A SINGLE ITEM ========== */
 router.get('/:id', (req, res, next) => {
   const { id } = req.params;
+  const userId = req.user.id;
 
   /***** Never trust users - validate input *****/
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -35,7 +37,7 @@ router.get('/:id', (req, res, next) => {
     return next(err);
   }
 
-  Folder.findById(id)
+  Folder.findOne({_id: id}, userId)
     .then(result => {
       if (result) {
         res.json(result);
@@ -51,8 +53,9 @@ router.get('/:id', (req, res, next) => {
 /* ========== POST/CREATE AN ITEM ========== */
 router.post('/', (req, res, next) => {
   const { name } = req.body;
+  const userId = req.user.id;
 
-  const newFolder = { name };
+  const newFolder = { name, userId };
 
   /***** Never trust users - validate input *****/
   if (!name) {
@@ -78,6 +81,7 @@ router.post('/', (req, res, next) => {
 router.put('/:id', (req, res, next) => {
   const { id } = req.params;
   const { name } = req.body;
+  const userId = req.user.id;
 
   /***** Never trust users - validate input *****/
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -92,7 +96,7 @@ router.put('/:id', (req, res, next) => {
     return next(err);
   }
 
-  const updateFolder = { name };
+  const updateFolder = { name, userId };
 
   Folder.findByIdAndUpdate(id, updateFolder, { new: true })
     .then(result => {
@@ -114,6 +118,7 @@ router.put('/:id', (req, res, next) => {
 /* ========== DELETE/REMOVE A SINGLE ITEM ========== */
 router.delete('/:id', (req, res, next) => {
   const { id } = req.params;
+  const userId = req.user.id;
 
   /***** Never trust users - validate input *****/
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -123,7 +128,7 @@ router.delete('/:id', (req, res, next) => {
   }
 
   // ON DELETE SET NULL equivalent
-  const folderRemovePromise = Folder.findByIdAndRemove(id);
+  const folderRemovePromise = Folder.findOneAndRemove({_id: id, userId: userId});
   // ON DELETE CASCADE equivalent
   // const noteRemovePromise = Note.deleteMany({ folderId: id });
 
