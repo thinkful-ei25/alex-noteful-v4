@@ -37,7 +37,7 @@ router.get('/:id', (req, res, next) => {
     return next(err);
   }
 
-  Folder.findOne({_id: id}, userId)
+  Folder.findOne({_id: id, userId})
     .then(result => {
       if (result) {
         res.json(result);
@@ -98,7 +98,7 @@ router.put('/:id', (req, res, next) => {
 
   const updateFolder = { name, userId };
 
-  Folder.findByIdAndUpdate(id, updateFolder, { new: true })
+  Folder.findOneAndUpdate({_id: id, userId}, updateFolder, { new: true })
     .then(result => {
       if (result) {
         res.json(result);
@@ -128,7 +128,7 @@ router.delete('/:id', (req, res, next) => {
   }
 
   // ON DELETE SET NULL equivalent
-  const folderRemovePromise = Folder.findOneAndRemove({_id: id, userId: userId});
+  const folderRemovePromise = Folder.findOneAndRemove({_id: id}, userId);
   // ON DELETE CASCADE equivalent
   // const noteRemovePromise = Note.deleteMany({ folderId: id });
 

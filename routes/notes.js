@@ -53,7 +53,7 @@ router.get('/:id', (req, res, next) => {
     return next(err);
   }
 
-  Note.findOne({_id: id}, userId)
+  Note.findOne({_id: id, userId})
     .populate('tags')
     .then(result => {
       if (result) {
