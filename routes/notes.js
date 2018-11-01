@@ -10,6 +10,58 @@ const Tag = require('../models/tag');
 
 const router = express.Router();
 
+const validateFolderId = function (folderId, userId) {
+  if (folderId === undefined){
+    return Promise.resolve();
+  }
+
+  if (folderId && !mongoose.Types.ObjectId.isValid(folderId)) {
+    const err = new Error('The `folderId` is not valid');
+    err.status = 400;
+    return Promise.reject(err);
+  }
+
+  return Folder.find({_id: folderId, userId})
+    .then(results => {
+      if (results.length === 0){
+        const err = new Error('Please use a folder you have already created');
+        err.status = 400;
+        return Promise.reject(err);
+      }
+    });  
+
+};
+
+const validateTagIds = function(tags, userId) {
+  if (tags === undefined){
+    return Promise.resolve();
+  }
+
+  const badIds = tags.filter((tag) => !mongoose.Types.ObjectId.isValid(tag));
+  if (badIds.length) {
+    const err = new Error('The `tags` array contains an invalid `id`');
+    err.status = 400;
+    return Promise.reject(err);
+  }
+
+  if (!Array.isArray(tags)) {
+    const err = new Error('The `tags` property must be an array');
+    err.status = 400;
+    return Promise.reject(err);
+  }
+  
+
+  return Tag.find({ $and: [{_id: { $in: tags}, userId}] })
+    .then(results => {
+      if (tags.length !== results.length){
+        const err = new Error('Please use a tag you have already created');
+        err.status = 400;
+        return Promise.reject(err);
+      } 
+    });
+};
+
+
 router.use('/', passport.authenticate('jwt', {session: false, failWithError: true}));
 
 
@@ -82,66 +134,6 @@ router.post('/', (req, res, next) => {
     return next(err);
   }
 
-  // if (folderId && !mongoose.Types.ObjectId.isValid(folderId)) {
-  //   const err = new Error('The `folderId` is not valid');
-  //   err.status = 400;
-  //   return next(err);
-  // }
-
-  // if (tags) {
-  //   const badIds = tags.filter((tag) => !mongoose.Types.ObjectId.isValid(tag));
-  //   if (badIds.length) {
-  //     const err = new Error('The `tags` array contains an invalid `id`');
-  //     err.status = 400;
-  //     return next(err);
-  //   }
-  // }
-
-  const validateFolderId = function (folderId, userId) {
-    
-    if (folderId && !mongoose.Types.ObjectId.isValid(folderId)) {
-      const err = new Error('The `folderId` is not valid');
-      err.status = 400;
-      return Promise.reject(err);
-    }
-
-    return Folder.find({_id: folderId, userId})
-      .then(results => {
-        if (results.length === 0){
-          const err = new Error('Please use a folder you have already created');
-          err.status = 400;
-          return Promise.reject(err);
-        }
-      });  
-  
-  };
-
-  const validateTagIds = function(tags, userId) {
-    if (tags) {
-      const badIds = tags.filter((tag) => !mongoose.Types.ObjectId.isValid(tag));
-      if (badIds.length) {
-        const err = new Error('The `tags` array contains an invalid `id`');
-        err.status = 400;
-        return Promise.reject(err);
-      }
-
-      if (!Array.isArray(tags)) {
-        const err = new Error('The `tags` property must be an array');
-        err.status = 400;
-        return Promise.reject(err);
-      }
-    }
-
-    return Tag.find({ $and: [{_id: { $in: tags}, userId}] })
-      .then(results => {
-        if (tags.length !== results.length){
-          const err = new Error('Please use a tag you have already created');
-          err.status = 400;
-          return Promise.reject(err);
-        } 
-      });
-  };
-  
 
   const newNote = { title, content, folderId, tags, userId };
   if (newNote.folderId === '') {
@@ -201,7 +193,7 @@ router.put('/:id', (req, res, next) => {
     validateTagIds(toUpdate.tags, userId)
   ])
     .then(() => {
-      return Note.findOneAndUpdate({_id: id, userId}, toUpdate, { new: true })
+      return Note.findOneAndUpdate({_id: id}, toUpdate, { new: true }).populate('tags')
         .then(result => {
           if (result) {
             res.json(result);
