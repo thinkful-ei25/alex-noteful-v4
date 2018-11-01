@@ -36,6 +36,7 @@ describe('Noteful API - Folders', function () {
   beforeEach(function () {
     return Promise.all([
       User.insertMany(users),
+      Note.insertMany(notes),
       Folder.insertMany(folders),
       Folder.createIndexes()
     ])
@@ -374,7 +375,7 @@ describe('Noteful API - Folders', function () {
 
   });
 
-  describe.only('DELETE /api/folders/:id', function () {
+  describe('DELETE /api/folders/:id', function () {
 
     it('should delete an existing folder and respond with 204', function () {
       let data;
