@@ -61,9 +61,7 @@ const validateTagIds = function(tags, userId) {
     });
 };
 
-
 router.use('/', passport.authenticate('jwt', {session: false, failWithError: true}));
-
 
 /* ========== GET/READ ALL ITEMS ========== */
 router.get('/', (req, res, next) => {
