@@ -128,7 +128,7 @@ router.delete('/:id', (req, res, next) => {
   }
 
   // ON DELETE SET NULL equivalent
-  const folderRemovePromise = Folder.findOneAndRemove({_id: id}, userId);
+  const folderRemovePromise = Folder.findOneAndRemove({_id: id, userId});
   // ON DELETE CASCADE equivalent
   // const noteRemovePromise = Note.deleteMany({ folderId: id });
 
