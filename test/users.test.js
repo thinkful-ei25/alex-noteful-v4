@@ -13,7 +13,7 @@ const expect = chai.expect;
 
 chai.use(chaiHttp);
 
-describe.only('Noteful API - Users', function () {
+describe('Noteful API - Users', function () {
   const username = 'exampleUser';
   const password = 'examplePass';
   const fullname = 'Example User';
@@ -213,7 +213,6 @@ describe.only('Noteful API - Users', function () {
             expect(res).to.have.status(201);
             expect(res.body).to.be.an('object');
             expect(res.body).to.have.keys('id', 'username', 'fullname');
-
             expect(res.body.id).to.exist;
             expect(res.body.username).to.equal(testUser.username);
             expect(res.body.fullname).to.equal(testUser.fullname);
