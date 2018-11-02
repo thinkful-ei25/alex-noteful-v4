@@ -191,7 +191,7 @@ router.put('/:id', (req, res, next) => {
     validateTagIds(toUpdate.tags, userId)
   ])
     .then(() => {
-      return Note.findOneAndUpdate({_id: id}, toUpdate, { new: true }).populate('tags')
+      return Note.findOneAndUpdate({_id: id, userId}, toUpdate, { new: true }).populate('tags')
         .then(result => {
           if (result) {
             res.json(result);

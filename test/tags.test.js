@@ -409,7 +409,7 @@ describe('Noteful API - Tags', function () {
 
     it('should delete an existing tag and remove tag reference from note', function () {
       let tagId;
-      return Note.findOne({ tags: { $exists: true, $ne: [] } })
+      return Note.findOne({ tags: { $exists: true, $ne: []},  userId: user.id })
         .then(data => {
           tagId = data.tags[0];
 

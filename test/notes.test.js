@@ -477,7 +477,7 @@ describe('Noteful API - Notes', function () {
           expect(res.body.id).to.equal(data.id);
           expect(res.body.title).to.equal(updateItem.title);
           expect(res.body.content).to.equal(data.content);
-          // expect(res.body.folderId).to.equal(data.folderId.toString());
+          expect(res.body.folderId).to.equal(data.folderId);
           expect(res.body.tags).to.deep.equal(data.tags);
           expect(new Date(res.body.createdAt)).to.eql(data.createdAt);
           // expect note to have been updated
@@ -506,7 +506,7 @@ describe('Noteful API - Notes', function () {
           expect(res.body.id).to.equal(data.id);
           expect(res.body.title).to.equal(data.title);
           expect(res.body.content).to.equal(updateItem.content);
-          // expect(res.body.folderId).to.equal(data.folderId.toString());
+          expect(res.body.folderId).to.equal(data.folderId);
           expect(res.body.tags).to.deep.equal(data.tags);
           expect(new Date(res.body.createdAt)).to.eql(data.createdAt);
           // expect note to have been updated
@@ -566,7 +566,7 @@ describe('Noteful API - Notes', function () {
           expect(res.body.id).to.equal(data.id);
           expect(res.body.title).to.equal(data.title);
           expect(res.body.content).to.equal(data.content);
-          // expect(res.body.folderId).to.equal(data.folderId.toString());
+          expect(res.body.folderId).to.equal(data.folderId);
           expect(res.body.tags[0].id).to.deep.equal(updateItem.tags[0]);
           expect(new Date(res.body.createdAt)).to.eql(data.createdAt);
           // expect note to have been updated
