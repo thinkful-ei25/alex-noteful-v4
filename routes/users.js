@@ -12,6 +12,8 @@ router.post('/', (req, res, next) => {
   const { username, fullname, password } = req.body;
 
   /***** Never trust users - validate input *****/
+  
+  /*Checking input for required fields */
   const requiredFields = ['username', 'password'];
   const missingField = requiredFields.find(field => !(field in req.body));
   
@@ -21,6 +23,7 @@ router.post('/', (req, res, next) => {
     return next(err);
   }
 
+  /*Checking input is type string */
   const stringFields = ['username', 'password', 'fullname'];
   const nonStringField = stringFields.find(field =>
     field in req.body && typeof req.body[field] !== 'string');
@@ -34,6 +37,7 @@ router.post('/', (req, res, next) => {
     });
   }
 
+  /*Checking input is doesn't have whitespace(trimmed) */
   const trimmedFields = ['username', 'password'];
   const nonTrimmedField = trimmedFields.find(field => 
     req.body[field].trim() !== req.body[field]
@@ -47,7 +51,7 @@ router.post('/', (req, res, next) => {
       location: nonTrimmedField
     });  
   }
-
+  /*Validates for max/min length of input*/
   const sizedFields = {
     username: {
       min: 1
@@ -75,6 +79,7 @@ router.post('/', (req, res, next) => {
     });
   }
 
+  /* db Promise */
   return User.find({ username })
     .then(()=> {
       return User.hashPassword(password)
@@ -87,7 +92,9 @@ router.post('/', (req, res, next) => {
           return User.create(newUser);
         })
         .then(result => {
-          return res.location(`/api/user/${result.id}`).status(201).json(result);
+          return res.location(`/api/user/${result.id}`)
+            .status(201)
+            .json(result);
         })
         .catch(err => {
           if (err.code === 11000) {
